@@ -1,7 +1,6 @@
 #!/bin/bash
 source "$HOME/.sdkman/bin/sdkman-init.sh"
 
-
 chmod +x download_app.sh
 ./download_app.sh
 
@@ -9,8 +8,8 @@ cd  microservice-app-example-master
 
 dir=`pwd`
 
-sudo apt update && sudo apt upgrade
-sudo apt install -y golang-go npm python3 python3-pip redis-server python2
+sudo apt update
+sudo apt install -y redis-server python2
 sdk use java 8.0.372-zulu
 
 
@@ -20,8 +19,14 @@ mkdir -p zipkin
 sudo service redis-server start
 
 cd $dir/zipkin
-curl -sSL https://zipkin.io/quickstart.sh | bash -s
-java -jar zipkin.jar &
+pid_zipkin=$(lsof -i :9411 | awk 'NR>1{print $2}')
+if [ -n "$pid_zipkin" ]; then
+  echo "Zipkin is already running."
+else
+  echo "Starting Zipkin..."
+  curl -sSL https://zipkin.io/quickstart.sh | bash -s
+  java -jar zipkin.jar &
+fi
 
 cd $dir
 

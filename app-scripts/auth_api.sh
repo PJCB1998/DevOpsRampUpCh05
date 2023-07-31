@@ -2,6 +2,15 @@
 
 dir=$1
 
+auth_api_pid=$(lsof | grep auth-api | awk 'NR>1{print $2}')
+if [ -n "$auth_api_pid" ]; then
+  echo "Auth API is already running with pid $auth_api_pid"
+  exit 0
+fi
+
+sudo apt update
+sudo apt install -y golang-go
+
 echo "Starting Auth API"
 cd $dir/auth-api
 export GO111MODULE=on

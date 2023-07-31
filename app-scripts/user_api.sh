@@ -2,6 +2,12 @@
 
 dir=$1
 
+pid=$(lsof -i :8083 | awk 'NR>1{print $2}')
+if [ -n "$pid" ]; then
+  echo "Users API is already running (pid=$pid)."
+  exit 0
+fi
+
 echo "Starting Users API"
 cd $dir/users-api
 echo "Clean Maven Install"
